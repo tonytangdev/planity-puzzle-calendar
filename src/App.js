@@ -1,26 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Calendar from "./components/Calendar/Calendar";
+
+import input from "./input.json";
+
+import { sortEvents } from "./utils/sortEvents";
+import { convertStringToHH_MM } from "./utils/convertTime";
+import { createEventsGroups } from "./utils/createEventsGroups";
+import { calculateEnd } from "./utils/calculateEnd";
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    let events = input.map(event => convertStringToHH_MM(event));
+    events = events.map(event => calculateEnd(event));
+    const orderedEvents = sortEvents(events);
+    const groups = createEventsGroups(orderedEvents);
+
+    this.state = { groups: groups };
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <Calendar
+          groups={this.state.groups}
+          height={window.screen.height}
+          width={window.screen.width}
+        ></Calendar>
+      </div>
+    );
+  }
 }
 
 export default App;
