@@ -24,8 +24,7 @@ class Event extends Component {
     return (
       <div className="Event">
         <div className="event" style={this.state.style}>
-          {this.props.event.start} - {this.props.event.end.hour}:
-          {this.props.event.end.minute}
+          {this.props.event.id}
         </div>
       </div>
     );
