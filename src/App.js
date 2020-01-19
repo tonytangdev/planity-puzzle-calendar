@@ -26,8 +26,8 @@ class App extends Component {
       <div className="App">
         <Calendar
           groups={this.state.groups}
-          height={window.screen.height}
-          width={window.screen.width}
+          height={window.innerHeight}
+          width={window.innerWidth}
         ></Calendar>
       </div>
     );
