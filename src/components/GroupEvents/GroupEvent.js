@@ -1,17 +1,15 @@
-import React, { Component } from "react";
+import React from "react";
 
 import Event from "../Event/Event";
 
-class GroupEvents extends Component {
-  render() {
-    return (
-      <div className="GroupEvent">
-        {this.props.group.map(event => (
-          <Event key={event.id} event={event}></Event>
-        ))}
-      </div>
-    );
-  }
+function GroupEvents({ group }) {
+  return (
+    <div className="GroupEvent">
+      {group.map(event => (
+        <Event key={event.id} event={event}></Event>
+      ))}
+    </div>
+  );
 }
 
 export default GroupEvents;

@@ -9,6 +9,8 @@ import { sortEvents } from "./utils/sortEvents";
 import { convertStringToHH_MM } from "./utils/convertTime";
 import { createEventsGroups } from "./utils/createEventsGroups";
 import { calculateEnd } from "./utils/calculateEnd";
+import { assignColumn } from "./utils/assignColumn";
+import { calculateEventsPosition } from "./utils/calculateEventsPosition";
 
 class App extends Component {
   constructor(props) {
@@ -16,19 +18,36 @@ class App extends Component {
     let events = input.map(event => convertStringToHH_MM(event));
     events = events.map(event => calculateEnd(event));
     const orderedEvents = sortEvents(events);
-    const groups = createEventsGroups(orderedEvents);
+    let groups = createEventsGroups(orderedEvents);
+    groups = groups.map(group => assignColumn(group));
+    groups = groups.map(group =>
+      calculateEventsPosition(group, window.innerHeight, window.innerWidth)
+    );
 
-    this.state = { groups: groups };
+    this.state = { groups };
+  }
+
+  updateSize() {
+    let groups = this.state.groups;
+    groups = groups.map(group =>
+      calculateEventsPosition(group, window.innerHeight, window.innerWidth)
+    );
+
+    this.setState({ groups });
+  }
+
+  componentDidMount() {
+    window.addEventListener("resize", this.updateSize.bind(this));
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateSize.bind(this));
   }
 
   render() {
     return (
       <div className="App">
-        <Calendar
-          groups={this.state.groups}
-          height={window.innerHeight}
-          width={window.innerWidth}
-        ></Calendar>
+        <Calendar groups={this.state.groups}></Calendar>
       </div>
     );
   }
