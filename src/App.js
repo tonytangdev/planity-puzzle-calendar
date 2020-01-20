@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 
 import Calendar from "./components/Calendar/Calendar";
@@ -12,45 +12,39 @@ import { calculateEnd } from "./utils/calculateEnd";
 import { assignColumn } from "./utils/assignColumn";
 import { calculateEventsPosition } from "./utils/calculateEventsPosition";
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    let events = input.map(event => convertStringToHH_MM(event));
-    events = events.map(event => calculateEnd(event));
-    const orderedEvents = sortEvents(events);
-    let groups = createEventsGroups(orderedEvents);
-    groups = groups.map(group => assignColumn(group));
-    groups = groups.map(group =>
-      calculateEventsPosition(group, window.innerHeight, window.innerWidth)
-    );
+function App() {
+  let events = input.map(event => convertStringToHH_MM(event));
+  events = events.map(event => calculateEnd(event));
+  const orderedEvents = sortEvents(events);
+  let groups = createEventsGroups(orderedEvents);
+  groups = groups.map(group => assignColumn(group));
+  groups = groups.map(group =>
+    calculateEventsPosition(group, window.innerHeight, window.innerWidth)
+  );
 
-    this.state = { groups };
-  }
+  const [currentGroups, setGroup] = useState(groups);
 
-  updateSize() {
-    let groups = this.state.groups;
-    groups = groups.map(group =>
-      calculateEventsPosition(group, window.innerHeight, window.innerWidth)
-    );
-
-    this.setState({ groups });
-  }
-
-  componentDidMount() {
-    window.addEventListener("resize", this.updateSize.bind(this));
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.updateSize.bind(this));
-  }
-
-  render() {
-    return (
-      <div className="App">
-        <Calendar groups={this.state.groups}></Calendar>
-      </div>
+  function updateSize() {
+    setGroup(
+      currentGroups.map(group =>
+        calculateEventsPosition(group, window.innerHeight, window.innerWidth)
+      )
     );
   }
+
+  useEffect(() => {
+    window.addEventListener("resize", updateSize.bind(this));
+
+    return function cleanup() {
+      window.removeEventListener("resize", updateSize.bind(this));
+    };
+  });
+
+  return (
+    <div className="App">
+      <Calendar groups={currentGroups}></Calendar>
+    </div>
+  );
 }
 
 export default App;
